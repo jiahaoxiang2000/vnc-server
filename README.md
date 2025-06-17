@@ -1,18 +1,31 @@
-# VNC Server Setup on Ubuntu
+# VNC Server ## Connection Information
+- **Server IP**: 192.168.71.202
+- **VNC Display**: :2
+- **VNC Port**: 5902
+- **Desktop Environment**: Ubuntu Default (GNOME Components)
+- **Current Resolution**: 1368x768 (adjustable)
+- **Color Depth**: 24-bitn Ubuntu
 
 ## Overview
 This setup includes a VNC server running with XFCE desktop environment on Ubuntu.
 
 ## Current Status
 ✅ VNC Server is running on display :2 (port 5902)
-✅ XFCE4 desktop environment installed
+✅ Ubuntu default desktop environment (GNOME components)  
+✅ 2K resolution (2560x1440) configured
+✅ Font issues resolved
+✅ No LightDM conflicts
 ✅ Management script available
 
 ## Connection Information
 - **Server IP**: 192.168.71.202
 - **VNC Display**: :2
 - **VNC Port**: 5902
-- **Desktop Environment**: XFCE4
+- **Desktop Environment**: Ubuntu Default (GNOME components)
+- **Resolution**: 2560x1440 (2K)
+- **Color Depth**: 24-bit
+- **Resolution**: 2560x1440 (2K)
+- **Color Depth**: 24-bit
 
 ## How to Connect
 
@@ -85,9 +98,10 @@ vncpasswd
   ```
 - Or use a VPN for secure remote access
 
-## Default Applications in XFCE
-- **File Manager**: Thunar
-- **Terminal**: XFCE Terminal  
-- **Text Editor**: Mousepad
-- **Image Viewer**: Ristretto
-- **Archive Manager**: Xarchiver
+## Default Applications in GNOME
+- **File Manager**: Nautilus (Files)
+- **Terminal**: GNOME Terminal
+- **Text Editor**: GNOME Text Editor / gedit
+- **Web Browser**: Firefox
+- **Settings**: GNOME Settings
+- **Software Center**: GNOME Software
