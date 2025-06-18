@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# VNC Server Management Script for Xilinx Vivado
+# VNC Server Management Script for Xilinx Vivado & Vitis
 # Optimized for CAD applications with XFCE4 desktop environment
 
 # Default resolution - 2K with higher DPI for better scaling
@@ -14,7 +14,7 @@ fi
 
 case "$1" in
     start)
-        echo "Starting VNC server with XFCE4 desktop for Xilinx Vivado"
+        echo "Starting VNC server with XFCE4 desktop for Xilinx Vivado & Vitis"
         echo "Resolution: $RESOLUTION (DPI: $DPI)"
         
         # Ensure XFCE4 xstartup configuration exists
@@ -53,7 +53,7 @@ EOF
         vncserver :4 -geometry $RESOLUTION -depth 24 -dpi $DPI -localhost=0
         echo "VNC server started on display :4 (port 5904) with XFCE4 desktop"
         echo "You can connect using: hostname:5904 or hostname:4"
-        echo "Optimized for Xilinx Vivado and other CAD applications"
+        echo "Optimized for Xilinx Vivado, Vitis HLS, and other CAD applications"
         ;;
     stop)
         echo "Stopping VNC server..."
@@ -90,7 +90,7 @@ EOF
     *)
         echo "Usage: $0 {start|stop|restart|status|setup} [resolution]"
         echo ""
-        echo "VNC Server Management Script for Xilinx Vivado"
+        echo "VNC Server Management Script for Xilinx Vivado & Vitis"
         echo "  setup   - Install XFCE4 desktop environment and VNC server"
         echo "  start   - Start VNC server on display :4 with XFCE4"
         echo "  stop    - Stop VNC server"
@@ -112,10 +112,10 @@ EOF
         echo ""
         echo "Example: $0 start 1920x1080"
         echo ""
-        echo "For Xilinx Vivado setup:"
+        echo "For Xilinx Vivado & Vitis setup:"
         echo "1. Run: $0 setup     (install XFCE4 desktop)"
         echo "2. Run: $0 start     (start VNC with XFCE4)"
-        echo "3. Connect via VNC to port 5904 and install Vivado in the desktop environment"
+        echo "3. Connect via VNC to port 5904 and install Vivado & Vitis in the desktop environment"
         exit 1
         ;;
 esac
