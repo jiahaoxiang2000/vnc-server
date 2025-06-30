@@ -5,7 +5,7 @@
 
 # Default resolution - 2K with higher DPI for better scaling
 RESOLUTION="1920x1080"
-DPI="120"
+DPI="150"
 
 # Default display number
 VNC_DISPLAY=4
@@ -93,9 +93,69 @@ fi
 export QT_X11_NO_MITSHM=1
 export _JAVA_AWT_WM_NONREPARENTING=1
 
+# Set up scaling for better icon visibility
+export GDK_SCALE=1.5
+export GDK_DPI_SCALE=1.0
+export QT_SCALE_FACTOR=1.5
+
 # Create unique session directories
 mkdir -p ~/.cache/sessions/display-$display
 mkdir -p ~/.config/xfce4/display-$display
+
+# Configure XFCE4 settings for larger icons and better scaling
+mkdir -p ~/.config/xfce4/xfconf/xfce-perchannel-xml
+cat > ~/.config/xfce4/xfconf/xfce-perchannel-xml/xfwm4.xml << 'XFWM4EOF'
+<?xml version="1.0" encoding="UTF-8"?>
+<channel name="xfwm4" version="1.0">
+  <property name="general" type="empty">
+    <property name="theme" type="string" value="Default"/>
+    <property name="title_font" type="string" value="Sans Bold 12"/>
+    <property name="button_layout" type="string" value="O|SHMC"/>
+  </property>
+</channel>
+XFWM4EOF
+
+cat > ~/.config/xfce4/xfconf/xfce-perchannel-xml/xsettings.xml << 'XSETTINGSEOF'
+<?xml version="1.0" encoding="UTF-8"?>
+<channel name="xsettings" version="1.0">
+  <property name="Net" type="empty">
+    <property name="ThemeName" type="string" value="Adwaita"/>
+    <property name="IconThemeName" type="string" value="Adwaita"/>
+    <property name="DoubleClickTime" type="int" value="400"/>
+    <property name="DoubleClickDistance" type="int" value="5"/>
+    <property name="DndDragThreshold" type="int" value="8"/>
+    <property name="CursorBlink" type="bool" value="true"/>
+    <property name="CursorBlinkTime" type="int" value="1200"/>
+    <property name="SoundThemeName" type="string" value="default"/>
+    <property name="EnableEventSounds" type="bool" value="false"/>
+    <property name="EnableInputFeedbackSounds" type="bool" value="false"/>
+  </property>
+  <property name="Xft" type="empty">
+    <property name="DPI" type="int" value="150"/>
+    <property name="Antialias" type="int" value="1"/>
+    <property name="Hinting" type="int" value="1"/>
+    <property name="HintStyle" type="string" value="hintslight"/>
+    <property name="RGBA" type="string" value="rgb"/>
+  </property>
+  <property name="Gtk" type="empty">
+    <property name="CanChangeAccels" type="bool" value="false"/>
+    <property name="ColorPalette" type="string" value="black:white:gray50:red:purple:blue:light blue:green:yellow:orange:lavender:brown:goldenrod4:dodger blue:pink:light green:gray10:gray30:gray75:gray90"/>
+    <property name="FontName" type="string" value="Sans 11"/>
+    <property name="IconSizes" type="string" value="gtk-menu=24,24:gtk-small-toolbar=24,24:gtk-large-toolbar=32,32:gtk-button=24,24"/>
+    <property name="KeyThemeName" type="string" value=""/>
+    <property name="ToolbarStyle" type="string" value="icons"/>
+    <property name="ToolbarIconSize" type="int" value="3"/>
+    <property name="IMPreeditStyle" type="string" value="callback"/>
+    <property name="IMStatusStyle" type="string" value="callback"/>
+    <property name="MenuImages" type="bool" value="true"/>
+    <property name="ButtonImages" type="bool" value="true"/>
+    <property name="MenuBarAccel" type="string" value="F10"/>
+    <property name="CursorThemeName" type="string" value=""/>
+    <property name="CursorThemeSize" type="int" value="24"/>
+    <property name="IMModule" type="string" value=""/>
+  </property>
+</channel>
+XSETTINGSEOF
 
 # XFCE4 Desktop Environment with unique session
 export XFCE4_SESSION=display-$display
