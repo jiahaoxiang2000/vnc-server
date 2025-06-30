@@ -63,10 +63,82 @@ EOF
         echo "You can connect using: hostname:59${VNC_DISPLAY} or hostname:$VNC_DISPLAY"
         echo "Optimized for Xilinx Vivado, Vitis HLS, and other CAD applications"
         ;;
+    start-multi)
+        DISPLAYS="${2:-4,5,6,7,8}"
+        RESOLUTION="${3:-$RESOLUTION}"
+        echo "Starting multiple VNC servers with XFCE4 desktop for Xilinx Vivado & Vitis"
+        echo "Displays: $DISPLAYS | Resolution: $RESOLUTION (DPI: $DPI)"
+        
+        # Ensure XFCE4 xstartup configuration exists
+        if [ ! -f ~/.vnc/xstartup ]; then
+            echo "Creating XFCE4 xstartup configuration..."
+            mkdir -p ~/.vnc
+            cat > ~/.vnc/xstartup << 'EOF'
+#!/bin/bash
+unset SESSION_MANAGER
+unset DBUS_SESSION_BUS_ADDRESS
+
+# Start D-Bus session
+if [ -x /usr/bin/dbus-launch ]; then
+    eval "$(dbus-launch --sh-syntax --exit-with-session)"
+fi
+
+# Set up environment for CAD tools
+export QT_X11_NO_MITSHM=1
+export _JAVA_AWT_WM_NONREPARENTING=1
+
+# XFCE4 Desktop Environment - ideal for CAD applications
+startxfce4 &
+
+# Keep the session alive
+while true; do
+    sleep 60
+done
+EOF
+            chmod +x ~/.vnc/xstartup
+            echo "XFCE4 xstartup configuration created"
+        fi
+        
+        IFS=',' read -ra DISPLAY_ARRAY <<< "$DISPLAYS"
+        for display in "${DISPLAY_ARRAY[@]}"; do
+            echo "Starting VNC server on display :$display..."
+            vncserver :$display -geometry $RESOLUTION -depth 24 -dpi $DPI -localhost=0
+            if [ $? -eq 0 ]; then
+                echo "✓ VNC server started on display :$display (port 59${display})"
+            else
+                echo "✗ Failed to start VNC server on display :$display"
+            fi
+            sleep 1
+        done
+        echo ""
+        echo "Multiple VNC servers started with XFCE4 desktop"
+        echo "Connection information:"
+        for display in "${DISPLAY_ARRAY[@]}"; do
+            echo "  Display :$display → hostname:59${display} or hostname:$display"
+        done
+        echo "Optimized for Xilinx Vivado, Vitis HLS, and other CAD applications"
+        ;;
     stop)
         echo "Stopping VNC server on display :$VNC_DISPLAY..."
         vncserver -kill :$VNC_DISPLAY
         echo "VNC server on :$VNC_DISPLAY stopped"
+        ;;
+    stop-multi)
+        DISPLAYS="${2:-4,5,6,7,8}"
+        echo "Stopping multiple VNC servers..."
+        echo "Displays: $DISPLAYS"
+        
+        IFS=',' read -ra DISPLAY_ARRAY <<< "$DISPLAYS"
+        for display in "${DISPLAY_ARRAY[@]}"; do
+            echo "Stopping VNC server on display :$display..."
+            vncserver -kill :$display 2>/dev/null
+            if [ $? -eq 0 ]; then
+                echo "✓ VNC server on display :$display stopped"
+            else
+                echo "! No VNC server running on display :$display or already stopped"
+            fi
+        done
+        echo "Multiple VNC servers stop operation completed"
         ;;
     restart)
         echo "Restarting VNC server with XFCE4 desktop for Xilinx Vivado"
@@ -96,14 +168,16 @@ EOF
         vncserver -list
         ;;
     *)
-        echo "Usage: $0 {start|stop|restart|status|setup} [display] [resolution]"
+        echo "Usage: $0 {start|stop|restart|start-multi|stop-multi|status|setup} [display] [resolution]"
         echo ""
         echo "VNC Server Management Script for Xilinx Vivado & Vitis"
-        echo "  setup   - Install XFCE4 desktop environment and VNC server"
-        echo "  start   - Start VNC server on specified display (default :4) with XFCE4"
-        echo "  stop    - Stop VNC server on specified display (default :4)"
-        echo "  restart - Restart VNC server on specified display (default :4)"
-        echo "  status  - Check VNC server status"
+        echo "  setup      - Install XFCE4 desktop environment and VNC server"
+        echo "  start      - Start VNC server on specified display (default :4) with XFCE4"
+        echo "  stop       - Stop VNC server on specified display (default :4)"
+        echo "  restart    - Restart VNC server on specified display (default :4)"
+        echo "  start-multi- Start multiple VNC servers (default displays: 4,5,6,7,8)"
+        echo "  stop-multi - Stop multiple VNC servers (default displays: 4,5,6,7,8)"
+        echo "  status     - Check VNC server status"
         echo ""
         echo "Connection Information:"
         echo "  VNC Display: :[display] (default :4)"
@@ -118,14 +192,22 @@ EOF
         echo "  2560x1440  - 2K QHD "
         echo "  3840x2160  - 4K UHD (requires powerful client)"
         echo ""
-        echo "Example: $0 start 4 1920x1080"
-        echo "         $0 start 5 2560x1440"
-        echo "         $0 stop 5"
+        echo "Single Display Examples:"
+        echo "  $0 start 4 1920x1080"
+        echo "  $0 start 5 2560x1440"
+        echo "  $0 stop 5"
+        echo ""
+        echo "Multiple Display Examples:"
+        echo "  $0 start-multi                    # Start displays 4,5,6,7,8 with default resolution"
+        echo "  $0 start-multi 1,2,3,4,5          # Start displays 1,2,3,4,5 with default resolution"
+        echo "  $0 start-multi 4,5,6,7,8 1920x1080 # Start displays 4,5,6,7,8 with 1920x1080"
+        echo "  $0 stop-multi                     # Stop displays 4,5,6,7,8"
+        echo "  $0 stop-multi 1,2,3,4,5           # Stop displays 1,2,3,4,5"
         echo ""
         echo "For Xilinx Vivado & Vitis setup:"
         echo "1. Run: $0 setup     (install XFCE4 desktop)"
-        echo "2. Run: $0 start [display] [resolution]     (start VNC with XFCE4)"
-        echo "3. Connect via VNC to port 59[display] and install Vivado & Vitis in the desktop environment"
+        echo "2. Run: $0 start-multi [displays] [resolution]     (start multiple VNC servers)"
+        echo "3. Connect via VNC to any port 59[display] and install Vivado & Vitis in the desktop environment"
         exit 1
         ;;
 esac
