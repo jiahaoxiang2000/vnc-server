@@ -94,9 +94,14 @@ export QT_X11_NO_MITSHM=1
 export _JAVA_AWT_WM_NONREPARENTING=1
 
 # Set up scaling for better icon visibility
-export GDK_SCALE=1.5
+export GDK_SCALE=2
 export GDK_DPI_SCALE=1.0
-export QT_SCALE_FACTOR=1.5
+export QT_SCALE_FACTOR=2
+
+# Vivado-specific scaling settings
+export QT_AUTO_SCREEN_SCALE_FACTOR=1
+export QT_SCREEN_SCALE_FACTORS=2
+export XILINX_VIVADO_HLS_SCALE_FACTOR=2
 
 # Create unique session directories
 mkdir -p ~/.cache/sessions/display-$display
