@@ -1,3 +1,6 @@
 vivado*
 !vivado*.sh
 vitis*
+.Xil/**
+project_1/**
+xvlog.pb
