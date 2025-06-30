@@ -69,25 +69,36 @@ EOF
         echo "Starting multiple VNC servers with XFCE4 desktop for Xilinx Vivado & Vitis"
         echo "Displays: $DISPLAYS | Resolution: $RESOLUTION (DPI: $DPI)"
         
-        # Ensure XFCE4 xstartup configuration exists
-        if [ ! -f ~/.vnc/xstartup ]; then
-            echo "Creating XFCE4 xstartup configuration..."
-            mkdir -p ~/.vnc
-            cat > ~/.vnc/xstartup << 'EOF'
+        mkdir -p ~/.vnc
+        
+        IFS=',' read -ra DISPLAY_ARRAY <<< "$DISPLAYS"
+        for display in "${DISPLAY_ARRAY[@]}"; do
+            echo "Creating xstartup configuration for display :$display..."
+            
+            # Create unique xstartup for each display
+            cat > ~/.vnc/xstartup-$display << EOF
 #!/bin/bash
 unset SESSION_MANAGER
 unset DBUS_SESSION_BUS_ADDRESS
 
-# Start D-Bus session
+# Set display for X applications
+export DISPLAY=:$display
+
+# Start D-Bus session for this display
 if [ -x /usr/bin/dbus-launch ]; then
-    eval "$(dbus-launch --sh-syntax --exit-with-session)"
+    eval "\$(dbus-launch --sh-syntax --exit-with-session)"
 fi
 
 # Set up environment for CAD tools
 export QT_X11_NO_MITSHM=1
 export _JAVA_AWT_WM_NONREPARENTING=1
 
-# XFCE4 Desktop Environment - ideal for CAD applications
+# Create unique session directories
+mkdir -p ~/.cache/sessions/display-$display
+mkdir -p ~/.config/xfce4/display-$display
+
+# XFCE4 Desktop Environment with unique session
+export XFCE4_SESSION=display-$display
 startxfce4 &
 
 # Keep the session alive
@@ -95,20 +106,16 @@ while true; do
     sleep 60
 done
 EOF
-            chmod +x ~/.vnc/xstartup
-            echo "XFCE4 xstartup configuration created"
-        fi
-        
-        IFS=',' read -ra DISPLAY_ARRAY <<< "$DISPLAYS"
-        for display in "${DISPLAY_ARRAY[@]}"; do
+            chmod +x ~/.vnc/xstartup-$display
+            
             echo "Starting VNC server on display :$display..."
-            vncserver :$display -geometry $RESOLUTION -depth 24 -dpi $DPI -localhost=0
+            vncserver :$display -geometry $RESOLUTION -depth 24 -dpi $DPI -localhost=0 -xstartup ~/.vnc/xstartup-$display
             if [ $? -eq 0 ]; then
                 echo "✓ VNC server started on display :$display (port 59${display})"
             else
                 echo "✗ Failed to start VNC server on display :$display"
             fi
-            sleep 1
+            sleep 2
         done
         echo ""
         echo "Multiple VNC servers started with XFCE4 desktop"
