@@ -1,0 +1,12 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Xilinx Vivado 2025.1
+Comment=Xilinx Vivado Design Suite
+Exec=bash -c "source /home/xjh/xilinx/2025.1/Vivado/settings64.sh && cd ~ && vivado"
+Icon=/home/xjh/xilinx/2025.1/doc/images/vivado_logo.png
+Terminal=false
+Categories=Development;Electronics;
+MimeType=application/x-vivado-project;
+StartupNotify=true
+Keywords=Vivado;Xilinx;FPGA;HDL;Verilog;VHDL;
